@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">SpeedTest OverHead</string>
+    <string name="app_name_10">SpeedTest 10</string>
+    <string name="app_name_15">SpeedTest 15</string>
+    <string name="app_name_20">SpeedTest 20</string>
+    <string name="app_name_25">SpeedTest 25</string>
+    <string name="app_name_30">SpeedTest 30</string>
+    <string name="app_name_500">SpeedTest 500</string>
+    <string name="app_name_1000">SpeedTest 1000</string>
+    <string name="name">SPEEDTEST</string>
+    <string name="download">Download</string>
+    <string name="max">Max</string>
+    <string name="avg">Avg</string>
+    <string name="unit">Mbps</string>
+    <string name="upload">Upload</string>
+    <string name="latency">Ping</string>
+    <string name="loss">Packet loss</string>
+    <string name="status">status</string>
+    <string name="begin_test">Begin Test</string>
+    <string name="stserverhost">Server host</string>
+    <string name="stserverport">Server port</string>
+    <string name="stbtserverok">Ok</string>
+    <string name="best_server">Best Server</string>
+    <string name="wifi">WIFI</string>
+    <string name="lte">LTE</string>
+    <string-array name="list_select_test">
+        <item>Download</item>
+        <item>Upload</item>
+
+    </string-array>
+</resources>
