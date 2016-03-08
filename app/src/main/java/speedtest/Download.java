@@ -1,14 +1,12 @@
 package speedtest;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.noqueue10.speedtest_overhead.Interface.IDownloadListener;
-import com.noqueue10.speedtest_overhead.object.SpeedUpdateObj;
-import com.noqueue10.speedtest_overhead.util.Config;
-import com.noqueue10.speedtest_overhead.util.Network;
+import com.work.speedtest_overhead.Interface.IDownloadListener;
+import com.work.speedtest_overhead.object.SpeedUpdateObj;
+import com.work.speedtest_overhead.util.Config;
+import com.work.speedtest_overhead.util.Network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -126,7 +124,7 @@ public class Download {
                 long time = timeTimer - timeStart;
                 long time_curr = timeTimer - timeCheckTimer;
                 timeCheckTimer = timeTimer;
-                Log.d(TAG, "giang debug time timer check: " + time_curr);
+                Log.d(TAG, "giang debug download time timer check: " + time_curr);
                 timeCheckTimer = System.currentTimeMillis();
 
                 float speed_wlan, speed_wlan_avg;

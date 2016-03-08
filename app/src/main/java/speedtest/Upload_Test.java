@@ -2,7 +2,7 @@ package speedtest;
 
 import android.util.Log;
 
-import com.noqueue10.speedtest_overhead.Interface.IUploadListener;
+import com.work.speedtest_overhead.Interface.IUploadListener;
 
 import java.io.OutputStream;
 import java.net.InetSocketAddress;

@@ -23,8 +23,8 @@
  */
 package speedtest;
 
-import com.noqueue10.speedtest_overhead.Interface.ISpeedTestListener;
-import com.noqueue10.speedtest_overhead.util.Const;
+import com.work.speedtest_overhead.Interface.ISpeedTestListener;
+import com.work.speedtest_overhead.util.Const;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -2,8 +2,8 @@ package speedtest;
 
 import android.util.Log;
 
-import com.noqueue10.speedtest_overhead.Interface.IPingListener;
-import com.noqueue10.speedtest_overhead.object.PingData;
+import com.work.speedtest_overhead.Interface.IPingListener;
+import com.work.speedtest_overhead.object.PingData;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

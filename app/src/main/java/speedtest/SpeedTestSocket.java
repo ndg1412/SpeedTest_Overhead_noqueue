@@ -25,7 +25,7 @@ package speedtest;
 
 import android.util.Log;
 
-import com.noqueue10.speedtest_overhead.Interface.ISpeedTestListener;
+import com.work.speedtest_overhead.Interface.ISpeedTestListener;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

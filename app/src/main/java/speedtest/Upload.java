@@ -1,12 +1,11 @@
 package speedtest;
 
-import android.net.TrafficStats;
 import android.util.Log;
 
-import com.noqueue10.speedtest_overhead.Interface.IUploadListener;
-import com.noqueue10.speedtest_overhead.object.SpeedUpdateObj;
-import com.noqueue10.speedtest_overhead.util.Config;
-import com.noqueue10.speedtest_overhead.util.Network;
+import com.work.speedtest_overhead.Interface.IUploadListener;
+import com.work.speedtest_overhead.object.SpeedUpdateObj;
+import com.work.speedtest_overhead.util.Config;
+import com.work.speedtest_overhead.util.Network;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -112,7 +111,6 @@ public class Upload {
                     lte = count_lte*Config.ULONG_MAX + tmp_lte;
                 }
 
-
                 if(wlan < wlan_tx) {
                     count_wlan++;
                     wlan = count_wlan*Config.ULONG_MAX + tmp_wlan;
@@ -126,7 +124,7 @@ public class Upload {
                 long time = timeTimer - timeStart;
                 long time_curr = timeTimer - timeCheckTimer;
                 timeCheckTimer = timeTimer;
-                Log.d(TAG, "giang debug time timer check: " + time_curr);
+                Log.d(TAG, "giang debug upload time timer check: " + time_curr);
                 timeCheckTimer = System.currentTimeMillis();
 
                 float speed_wlan, speed_wlan_avg;

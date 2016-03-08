@@ -94,7 +94,7 @@
         </RelativeLayout>
 
     </RelativeLayout>
-    <com.noqueue10.speedtest_overhead.wiget.SpeedView
+    <com.work.speedtest_overhead.wiget.SpeedView
         android:id="@+id/svSpeedDisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
