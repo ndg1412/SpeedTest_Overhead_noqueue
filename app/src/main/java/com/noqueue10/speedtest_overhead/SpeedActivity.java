@@ -305,7 +305,7 @@ public class SpeedActivity extends Activity {
                     if (!Network.isIP(ip))
                         Toast.makeText(SpeedActivity.this, "Server host is not ip address", Toast.LENGTH_LONG).show();
                     int port = Integer.valueOf(etServerPort.getText().toString().trim());
-//                    if (Network.CheckHost(ip)) {
+                    if (Network.CheckHost(ip)) {
                         editor.putString(Config.PREF_KEY_SERVER_HOST, ip);
                         editor.putInt(Config.PREF_KEY_SERVER_PORT, port);
                         Config.strServer_Ip = ip;
@@ -313,8 +313,8 @@ public class SpeedActivity extends Activity {
                         //Log.d(TAG, "ip: " + Config.strServer_Ip + ", port: " + Config.iServer_Port);
                         editor.commit();
                         dialog.dismiss();
-//                    } else
-//                        Toast.makeText(SpeedActivity.this, "Can not ping to server ip", Toast.LENGTH_LONG).show();
+                    } else
+                        Toast.makeText(SpeedActivity.this, "Can not ping to server ip", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(SpeedActivity.this, "port is number", Toast.LENGTH_LONG).show();
