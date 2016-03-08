@@ -200,7 +200,7 @@ public class SpeedActivity extends Activity {
                         String ip = prefs.getString(Config.PREF_KEY_SERVER_HOST, null);
                         int port = prefs.getInt(Config.PREF_KEY_SERVER_PORT, 0);
                         //Log.d(TAG, "ip: " + ip + ", port: " + port);
-                        Download down = new Download(context, ip, port, "/speedtest/", Config.DOWNLOAD_FILE);
+                        Download down = new Download(ip, port, "/speedtest/", Config.DOWNLOAD_FILE);
                         down.addDownloadTestListener(new IDownloadListener() {
                             @Override
                             public void onDownloadPacketsReceived(SpeedUpdateObj data) {
@@ -344,7 +344,7 @@ public class SpeedActivity extends Activity {
                         String ip = prefs.getString(Config.PREF_KEY_SERVER_HOST, null);
                         int port = prefs.getInt(Config.PREF_KEY_SERVER_PORT, 0);
                         //Log.d(TAG, "ip: " + ip + ", port: " + port);
-                        Download down = new Download(context, ip, port, "/speedtest/", Config.DOWNLOAD_FILE);
+                        Download down = new Download(ip, port, "/speedtest/", Config.DOWNLOAD_FILE);
                         down.addDownloadTestListener(new IDownloadListener() {
                             @Override
                             public void onDownloadPacketsReceived(SpeedUpdateObj data) {

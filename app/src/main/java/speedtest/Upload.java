@@ -6,6 +6,7 @@ import android.util.Log;
 import com.noqueue10.speedtest_overhead.Interface.IUploadListener;
 import com.noqueue10.speedtest_overhead.object.SpeedUpdateObj;
 import com.noqueue10.speedtest_overhead.util.Config;
+import com.noqueue10.speedtest_overhead.util.Network;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,7 +37,10 @@ public class Upload {
     List<Float> lMax_wifi = new ArrayList<Float>();
     List<Float> lMax_lte = new ArrayList<Float>();
     long timeStart = 0, timeStart_Calc = 0;
+    long timeCheckTimer;
     boolean bCheck = false;
+    String[] sLte;
+    int count_wlan = 0, count_lte = 0;
 
     private IUploadListener uploadTestListenerList;
     public void addUploadTestListener(IUploadListener listener) {
@@ -49,6 +53,7 @@ public class Upload {
         this.uri = uri;
         this.sizes = sizes;
         Log.d(TAG, "size: leng: " + sizes.length);
+        sLte = Network.getLTEIfName();
         if(tiUpload != null) {
             tiUpload.cancel();
         }
@@ -73,9 +78,18 @@ public class Upload {
 
     public void Upload_Run() {
         uploadTestListenerList.onUploadProgress(0);
-        wlan_tx = wlan_tx_first = TrafficStats.getTotalTxBytes() - TrafficStats.getMobileTxBytes();
-        lte_tx = lte_tx_first = TrafficStats.getMobileTxBytes();
         timeStart_Calc = timeStart = System.currentTimeMillis();
+        timeCheckTimer = System.currentTimeMillis();
+        wlan_tx = wlan_tx_first = Network.getRxByte(Config.WLAN_IF);
+        if(sLte == null)
+            lte_tx = lte_tx_first = 0;
+        else {
+            long tmp = 0;
+            for(String s : sLte)
+                tmp += Network.getRxByte(s);
+            lte_tx = lte_tx_first = tmp;
+        }
+
         for(int size : sizes) {
             Do_Upload up = new Do_Upload(size);
             up.start();
@@ -85,76 +99,89 @@ public class Upload {
         tiUpload.schedule(new TimerTask() {
             @Override
             public void run() {
+                long tmp_wlan = Network.getTxByte(Config.WLAN_IF);
+                long wlan = count_wlan*Config.ULONG_MAX + tmp_wlan;
+                long lte = 0, tmp_lte = 0;;
+                if(sLte == null) {
+                    lte = 0;
+                }
+                else {
+
+                    for(String s : sLte)
+                        tmp_lte += Network.getTxByte(s);
+                    lte = count_lte*Config.ULONG_MAX + tmp_lte;
+                }
+
+
+                if(wlan < wlan_tx) {
+                    count_wlan++;
+                    wlan = count_wlan*Config.ULONG_MAX + tmp_wlan;
+                }
+                if(lte < lte_tx) {
+                    count_lte++;
+                    lte = count_lte*Config.ULONG_MAX + tmp_lte;
+                }
+
                 long timeTimer = System.currentTimeMillis();
-                long time = System.currentTimeMillis() - timeStart;
-                long wlan = TrafficStats.getTotalTxBytes() - TrafficStats.getMobileTxBytes();
-                long lte = TrafficStats.getMobileTxBytes();
-                float speed_wlan = ((wlan - wlan_tx) * 8 / 1000000 * (1000f / Config.TIMER_SLEEP));
-                float speed_lte = ((lte - lte_tx) * 8 / 1000000 * (1000f / Config.TIMER_SLEEP));
-                float speed_wlan_avg = (wlan - wlan_tx_first) * 8 / ((timeTimer - timeStart_Calc) / 1000f)/1000000;
-                float speed_lte_avg = (lte - lte_tx_first) * 8 / ((timeTimer - timeStart_Calc) / 1000f)/1000000;
-                if(speed_wlan > Config.WIFI_LIMIT)
-                    speed_wlan = Config.WIFI_LIMIT;
-                if(speed_lte > Config.LTE_LIMIT)
-                    speed_lte = Config.LTE_LIMIT;
-                if(speed_wlan_avg > Config.WIFI_LIMIT)
-                    speed_wlan_avg = Config.WIFI_LIMIT;
-                if(speed_lte_avg > Config.LTE_LIMIT)
-                    speed_lte_avg = Config.LTE_LIMIT;
-                float speed = speed_wlan + speed_lte;
+                long time = timeTimer - timeStart;
+                long time_curr = timeTimer - timeCheckTimer;
+                timeCheckTimer = timeTimer;
+                Log.d(TAG, "giang debug time timer check: " + time_curr);
+                timeCheckTimer = System.currentTimeMillis();
+
+                float speed_wlan, speed_wlan_avg;
+                float speed_lte, speed_lte_avg, speed;
+
+                speed_wlan = (float)(wlan - wlan_tx) * 8 / (time_curr / 1000f)/1000000;
+                speed_wlan_avg = (float)(wlan - wlan_tx_first) * 8 / ((timeTimer - timeStart_Calc) / 1000f)/1000000;
+                speed_lte = (float)(lte - lte_tx) * 8 / (time_curr / 1000f)/1000000;
+                speed_lte_avg = (float)(lte - lte_tx_first) * 8 / ((timeTimer - timeStart_Calc) / 1000f)/1000000;
+
+                speed = speed_wlan + speed_lte;
+
                 lMax_wifi.add(speed_wlan);
                 lMax_lte.add(speed_lte);
                 lMax.add(speed);
 
                 float max_speed_wifi = getBandwidth(lMax_wifi);
                 float max_speed_lte = getBandwidth(lMax_lte);
+                SpeedUpdateObj curData = new SpeedUpdateObj(speed, max_speed_wifi, speed_wlan_avg, max_speed_lte, speed_lte_avg);
+
                 if(max_speed_wifi < speed_wlan_avg) {
                     max_speed_wifi = speed_wlan_avg;
                     lMax_wifi.add(max_speed_wifi);
-                    if(time >= Config.TIME_START)
-                        lMax_wifi.add(max_speed_wifi);
                 }
                 if(max_speed_lte < speed_lte_avg) {
                     max_speed_lte = speed_lte_avg;
                     lMax_lte.add(max_speed_lte);
-                    if(time >= Config.TIME_START)
-                        lMax_lte.add(max_speed_lte);
                 }
+
+                float max_wifi = getBandwidth(lMax_wifi);
+                float max_lte = getBandwidth(lMax_lte);
+                float max_speed = getBandwidth(lMax);
+                float avg_speed = speed_wlan_avg + speed_lte_avg;
+
+                SpeedUpdateObj lastData;
+                if(max_speed < avg_speed)
+                    lastData = new SpeedUpdateObj(avg_speed, avg_speed, max_wifi, speed_wlan_avg, max_lte, speed_lte_avg);
+                else
+                    lastData = new SpeedUpdateObj(avg_speed, max_speed, max_wifi, speed_wlan_avg, max_lte, speed_lte_avg);
+
                 uploadTestListenerList.onUploadProgress((int) (100 * (timeTimer - timeStart) / Config.TIME_STOP));
                 if((time >= Config.TIME_START) && (!bCheck)) {
                     bCheck = true;
                     wlan_tx_first = wlan;
                     lte_tx_first = lte;
-                    timeStart_Calc = timeTimer;
+                    timeStart_Calc = timeCheckTimer;
                 }
-
                 if(time >= Config.TIME_STOP) {
-                    Log.d(TAG, "==========================================complete ======================>");
-
-                    float max_wifi = getBandwidth(lMax_wifi);
-                    float max_lte = getBandwidth(lMax_lte);
-                    float max_speed = getBandwidth(lMax);
-                    float avg_wifi = ((wlan - wlan_tx_first) * 8) / ((timeTimer - timeStart_Calc) / 1000f) /1000000;
-                    float avg_lte = ((lte - lte_tx_first) * 8) / ((timeTimer - timeStart_Calc) / 1000f) /1000000;
-                    if(avg_wifi > Config.WIFI_LIMIT)
-                        avg_wifi = Config.WIFI_LIMIT;
-                    if(avg_lte > Config.LTE_LIMIT)
-                        avg_lte = Config.LTE_LIMIT;
-                    float avg_speed = avg_wifi + avg_lte;
-                    SpeedUpdateObj data;
-                    if(max_speed < avg_speed)
-                        data = new SpeedUpdateObj(avg_speed, avg_speed, max_wifi, avg_wifi, max_lte, avg_lte);
-                    else
-                        data = new SpeedUpdateObj(avg_speed, max_speed, max_wifi, avg_wifi, max_lte, avg_lte);
-                    uploadTestListenerList.onUploadPacketsReceived(data);
+                    uploadTestListenerList.onUploadPacketsReceived(lastData);
                     tiUpload.cancel();
                     tiUpload = null;
                     return;
                 }
 
-                SpeedUpdateObj data = new SpeedUpdateObj(speed, max_speed_wifi, speed_wlan_avg, max_speed_lte,
-                        speed_lte_avg);
-                uploadTestListenerList.onUploadUpdate(data);
+                uploadTestListenerList.onUploadUpdate(curData);
                 wlan_tx = wlan;
                 lte_tx = lte;
             }

@@ -56,8 +56,7 @@ public class Download {
         downloadTestListenerList = listener;
     }
 
-    public Download(Context context, String host, int port, String uri, String[] files) {
-        this.context = context;
+    public Download(String host, int port, String uri, String[] files) {
         this.host = host;
         this.port = port;
         this.uri = uri;
@@ -355,13 +354,5 @@ public class Download {
     static boolean isRun = false;
     public static void setInterrupt(boolean is) {
         isRun = is;
-    }
-
-    public boolean isMobileConnected() {
-        ConnectivityManager connManager = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        Log.d(TAG, "3G " + netInfo);
-        return ((netInfo != null) && netInfo.isConnected());
     }
 }
